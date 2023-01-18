@@ -1,8 +1,6 @@
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client( process.env.GOOGLE_SECRET );
 
-const { GOOGLE_SECRET, GOOGLE_ID } = require('../constants/env');
-
 async function googleVerify( token ) {
 
     const ticket = await client.verifyIdToken({
@@ -12,7 +10,6 @@ async function googleVerify( token ) {
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });
     const payload = ticket.getPayload();
-    console.log({ payload })
     
     return payload
 }
