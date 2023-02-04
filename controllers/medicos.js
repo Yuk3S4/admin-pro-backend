@@ -1,6 +1,7 @@
 const { response } = require("express")
 const Medico = require("../models/medico")
 const Hospital = require("../models/hospital")
+const { isMongoId } = require("class-validator")
 
 const getMedicos = async(req, res = response) => {
 
@@ -108,9 +109,49 @@ const borrarMedico = async(req, res = response) => {
     }
 }
 
+const getMedicoByID = async(req, res = response) => {
+
+    const id = req.params.id
+
+    try {
+
+        if (!isMongoId(id)) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'ID no válido',
+            })
+        }
+
+        const medico = await Medico.findById(id)
+                                .populate('usuario', 'name img') // devolver el nombre e imágen del usuario relacionado
+                                .populate('hospital', 'name') // devolver el nombre del hopital relacionado
+        
+        // if (!medico) {
+        //     return res.status(404).json({
+        //         ok: false,
+        //         msg: 'Médico no encontrado por id',
+        //     })
+        // }
+
+        res.json({
+            ok: true,
+            medico,
+        })
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con al administrador',
+        })
+    }
+    
+}
+
 module.exports = {
     getMedicos,
     crearMedico,
     actualizarMedico,
     borrarMedico,
+    getMedicoByID,
 }
